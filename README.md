@@ -1,170 +1,142 @@
-# ClientKeep — Full Setup & Deployment Guide
+# 🚀 ClientKeep
+
+> A simple CRM for freelancers and small businesses
 
 ---
 
-## 🆕 Phase 2 — What's New
+## 📌 Overview
 
-- ✅ Revenue bar chart on dashboard (Chart.js)
-- ✅ Activity log (every action is tracked)
-- ✅ PDF invoice download (WeasyPrint)
-- ✅ Client portal — public link for client to view & confirm payment
-- ✅ Reminders system — with overdue detection
-- ✅ Profile & password settings page
-- ✅ Currency selector (USD, EUR, DZD, and 7 more)
-- ✅ Export to CSV (clients + invoices)
-- ✅ Recurring invoices (monthly / quarterly)
+**ClientKeep** is a lightweight CRM designed to help freelancers and small businesses manage their daily operations without relying on messy tools like spreadsheets or scattered notes.
 
----
-
-## 📁 Full Folder Structure
-
-```
-clientkeep/
-├── app.py
-├── config.py
-├── extensions.py
-├── models.py
-├── requirements.txt
-├── Procfile                    ← for Render deployment
-├── runtime.txt                 ← for Render deployment
-├── .env
-├── .gitignore
-├── routes/
-│   ├── __init__.py
-│   ├── auth.py
-│   ├── clients.py
-│   ├── dashboard.py
-│   ├── invoices.py
-│   ├── reminders.py
-│   ├── settings.py
-│   ├── portal.py
-│   └── export.py
-└── templates/
-    ├── base.html
-    ├── auth/
-    │   ├── login.html
-    │   └── register.html
-    ├── dashboard/
-    │   └── index.html
-    ├── clients/
-    │   ├── index.html
-    │   ├── form.html
-    │   └── view.html
-    ├── invoices/
-    │   ├── index.html
-    │   ├── form.html
-    │   ├── view.html
-    │   └── pdf_template.html
-    ├── reminders/
-    │   └── index.html
-    ├── settings/
-    │   └── index.html
-    └── portal/
-        └── view.html
-```
+It centralizes everything into **one clean dashboard**:
+- Clients
+- Invoices
+- Payments
+- Notes
+- Reminders
 
 ---
 
-## ⚙️ Local Setup (Phase 2)
+## 🌍 Vision
 
-### 1 — Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-WeasyPrint on Windows needs GTK3:
-→ Download: https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases
-→ Install it, restart terminal, then `pip install WeasyPrint`
-
-### 2 — Run new migrations
-
-```bash
-flask db migrate -m "phase2"
-flask db upgrade
-```
-
-### 3 — Run
-
-```bash
-flask run
-```
+Help freelancers manage their business **without spreadsheets**.
 
 ---
 
-## 🚀 Deploy to Render + Neon
+## 🎯 Mission
 
-### Step 1 — Neon database
+Replace chaotic workflows like:
+- Excel sheets
+- WhatsApp reminders
+- Scattered notes
 
-1. https://neon.tech → free account → new project `clientkeep`
-2. Copy connection string:
-   `postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require`
-
-### Step 2 — Add to your project
-
-Create `Procfile`:
-```
-web: gunicorn app:app
-```
-
-Create `runtime.txt`:
-```
-python-3.11.0
-```
-
-Create `.gitignore`:
-```
-venv/
-__pycache__/
-*.pyc
-.env
-instance/
-```
-
-Install gunicorn and freeze:
-```bash
-pip install gunicorn
-pip freeze > requirements.txt
-```
-
-Update `config.py` for Neon SSL:
-```python
-uri = os.environ.get('DATABASE_URL') or 'postgresql://...'
-# Fix for Render (postgres:// -> postgresql://)
-if uri.startswith('postgres://'):
-    uri = uri.replace('postgres://', 'postgresql://', 1)
-SQLALCHEMY_DATABASE_URI = uri
-```
-
-### Step 3 — GitHub
-
-```bash
-git init
-git add .
-git commit -m "ClientKeep"
-git remote add origin https://github.com/YOU/clientkeep.git
-git push -u origin main
-```
-
-### Step 4 — Render
-
-1. render.com → New Web Service → connect GitHub
-2. Build: `pip install -r requirements.txt`
-3. Start: `gunicorn app:app`
-4. Env vars:
-   - `DATABASE_URL` = your Neon string
-   - `SECRET_KEY` = any long random string
-   - `FLASK_ENV` = production
-5. Deploy → after first deploy, open Shell tab → `flask db upgrade`
+With a **simple, structured system**.
 
 ---
 
-## 🛟 Troubleshooting
+## 🔥 Problem
 
-| Problem | Fix |
-|---------|-----|
-| WeasyPrint fails on Windows | Install GTK3 runtime |
-| `No changes detected` on migrate | Check models.py saved, try `flask db stamp head` first |
-| Neon SSL error | Add `?sslmode=require` to DATABASE_URL |
-| `postgres://` error on Render | Use the config.py fix above |
-| Render crash on start | Check logs, ensure SECRET_KEY + DATABASE_URL are set |
+Freelancers often struggle to manage:
+- Clients
+- Invoices
+- Follow-ups
+- Payments
+
+This leads to:
+- Lost information  
+- Missed payments  
+- Poor organization  
+
+---
+
+## ✅ Solution
+
+ClientKeep provides a **clean and intuitive CRM dashboard** to manage everything in one place.
+
+---
+
+## 🧩 Core Concept
+
+Users can manage:
+
+
+Clients
+Invoices
+Payments
+Notes
+Reminders
+
+
+---
+
+## ✨ Features
+
+### 👤 Client Management
+- Add and manage clients  
+- Store contact info (email, phone)  
+- Attach notes per client  
+
+---
+
+### 🧾 Invoice System
+Create simple invoices with:
+
+Service
+Price
+Date
+Status
+
+
+---
+
+### 💳 Payment Tracking
+Track invoice status:
+- Paid  
+- Pending  
+- Overdue  
+
+---
+
+### 📝 Notes
+Store important client insights:
+
+Client prefers WhatsApp
+Paid late last time
+
+
+---
+
+### ⏰ Reminders
+- Follow-ups  
+- Unpaid invoices  
+
+---
+
+### 📊 Dashboard Analytics
+Get insights like:
+- Total clients  
+- Total revenue  
+- Pending payments  
+- Monthly income  
+
+---
+
+## 🛠 Tech Stack
+
+### Backend
+- Flask  
+- Flask-Login  
+- SQLAlchemy  
+- Flask-Migrate  
+
+### Frontend
+- TailwindCSS  
+- Alpine.js  
+
+### Database
+- PostgreSQL  
+
+### Other
+- PDF Invoice Generation  
+
+---
