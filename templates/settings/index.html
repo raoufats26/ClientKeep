@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Settings — ClientKeep{% endblock %}
+{% block page_title %}Settings{% endblock %}
+
+{% block content %}
+<div style="max-width:560px;display:flex;flex-direction:column;gap:16px;">
+
+  <!-- Profile -->
+  <div class="card">
+    <div class="card-head"><span class="card-head-title">Profile</span></div>
+    <div class="card-body">
+      <form method="POST">
+        <input type="hidden" name="action" value="profile"/>
+
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+          <div class="av av-l" style="font-size:22px;">{{ current_user.name[0].upper() }}</div>
+          <div>
+            <div style="font-size:14px;font-weight:500;color:var(--text-1);">{{ current_user.name }}</div>
+            <div style="font-size:12.5px;color:var(--text-3);">{{ current_user.email }}</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:2px;">Member since {{ current_user.created_at.strftime('%B %Y') }}</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label class="field-label" for="name">Full name</label>
+            <input class="field-input" type="text" id="name" name="name" value="{{ current_user.name }}" required/>
+          </div>
+          <div class="field">
+            <label class="field-label" for="email">Email address</label>
+            <input class="field-input" type="email" id="email" name="email" value="{{ current_user.email }}" required/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="currency">Currency</label>
+          <select class="field-input" id="currency" name="currency" style="max-width:220px;">
+            {% for code, name, symbol in currencies %}
+            <option value="{{ code }}" {% if current_user.currency == code %}selected{% endif %}>
+              {{ symbol }} — {{ name }} ({{ code }})
+            </option>
+            {% endfor %}
+          </select>
+          <div style="font-size:11.5px;color:var(--text-3);margin-top:5px;">Used for all invoice amounts across the app.</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-sm">
+          <i data-lucide="save"></i> Save profile
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Password -->
+  <div class="card">
+    <div class="card-head"><span class="card-head-title">Change password</span></div>
+    <div class="card-body">
+      <form method="POST">
+        <input type="hidden" name="action" value="password"/>
+
+        <div class="field">
+          <label class="field-label" for="cpw">Current password</label>
+          <input class="field-input" type="password" id="cpw" name="current_password" placeholder="••••••••" required autocomplete="current-password"/>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label class="field-label" for="npw">New password</label>
+            <input class="field-input" type="password" id="npw" name="new_password" placeholder="Min. 8 characters" required autocomplete="new-password"/>
+          </div>
+          <div class="field">
+            <label class="field-label" for="confpw">Confirm new password</label>
+            <input class="field-input" type="password" id="confpw" name="confirm_password" placeholder="Repeat password" required autocomplete="new-password"/>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-ghost btn-sm">
+          <i data-lucide="lock"></i> Update password
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Export -->
+  <div class="card">
+    <div class="card-head"><span class="card-head-title">Export data</span></div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:14px;">Download all your data as CSV files for backup or analysis.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <a href="{{ url_for('export.clients_csv') }}" class="btn btn-ghost btn-sm">
+          <i data-lucide="download"></i> Clients CSV
+        </a>
+        <a href="{{ url_for('export.invoices_csv') }}" class="btn btn-ghost btn-sm">
+          <i data-lucide="download"></i> Invoices CSV
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Danger zone -->
+  <div class="card" style="border-color:rgba(192,57,43,0.2);">
+    <div class="card-head" style="border-color:rgba(192,57,43,0.15);">
+      <span class="card-head-title" style="color:var(--danger);">Danger zone</span>
+    </div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:14px;">Permanently delete your account and all associated data. This action cannot be undone.</p>
+      <a href="{{ url_for('auth.logout') }}" class="btn btn-danger-ghost btn-sm">
+        <i data-lucide="log-out"></i> Sign out
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

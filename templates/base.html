@@ -1,335 +1,370 @@
 <!DOCTYPE html>
-<html lang="en" class="light" data-theme="light">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{% block title %}ClientKeep{% endblock %}</title>
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            display: ['Clash Display', 'sans-serif'],
-            body: ['Satoshi', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50:  '#f0f9ff',
-              100: '#e0f2fe',
-              200: '#bae6fd',
-              300: '#7dd3fc',
-              400: '#38bdf8',
-              500: '#0ea5e9',
-              600: '#0284c7',
-              700: '#0369a1',
-              800: '#075985',
-              900: '#0c4a6e',
-            },
-            accent: {
-              400: '#a78bfa',
-              500: '#8b5cf6',
-              600: '#7c3aed',
-            }
-          }
-        }
-      }
-    }
-  </script>
-
   <style>
-    * { font-family: 'Satoshi', sans-serif; }
-    .font-display { font-family: 'Clash Display', sans-serif; }
-
-    /* Smooth theme transitions */
-    *, *::before, *::after {
-      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    :root {
+      --bg:           #f5f4f0;
+      --bg-card:      #ffffff;
+      --bg-sidebar:   #111110;
+      --bg-hover:     #eeede8;
+      --border:       #e4e2db;
+      --border-dark:  #2a2927;
+      --text-1:       #1a1917;
+      --text-2:       #6b6862;
+      --text-3:       #9a9690;
+      --accent:       #1a6b5a;
+      --accent-light: #e8f4f1;
+      --accent-dark:  #14543f;
+      --danger:       #c0392b;
+      --sidebar-text: #c8c4bc;
+      --sidebar-muted:#5a5754;
+      --sidebar-active:#ffffff;
+    }
+    [data-theme="dark"] {
+      --bg:           #0f0f0e;
+      --bg-card:      #171715;
+      --bg-sidebar:   #0a0a09;
+      --bg-hover:     #1f1f1d;
+      --border:       #272623;
+      --border-dark:  #272623;
+      --text-1:       #e8e6e0;
+      --text-2:       #8a8680;
+      --text-3:       #5a5752;
+      --accent:       #2a9d82;
+      --accent-light: #0d2e28;
+      --accent-dark:  #1a7a64;
+      --danger:       #e05252;
+      --sidebar-text: #c8c4bc;
+      --sidebar-muted:#5a5754;
+      --sidebar-active:#ffffff;
     }
 
-    /* Custom scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 3px; }
-
-    /* Glassmorphism sidebar */
-    .glass {
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: 'DM Sans', system-ui, sans-serif; }
+    body {
+      background: var(--bg); color: var(--text-1);
+      font-size: 14px; line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.2s, color 0.2s;
+    }
+    body::after {
+      content:''; position:fixed; inset:0; z-index:9998; pointer-events:none;
+      opacity:0.018;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      background-size: 200px;
     }
 
-    /* Gradient text */
-    .gradient-text {
-      background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 216px; background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-dark);
+      display: flex; flex-direction: column;
+      height: 100vh; position: fixed; left: 0; top: 0; z-index: 40;
     }
+    .sb-logo {
+      padding: 20px 18px 16px;
+      border-bottom: 1px solid var(--border-dark);
+      display: flex; align-items: center; gap: 9px; text-decoration: none;
+      flex-shrink: 0;
+    }
+    .sb-mark {
+      width: 26px; height: 26px; border-radius: 6px;
+      background: var(--accent); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sb-mark svg { width: 13px; height: 13px; color: #fff; }
+    .sb-name { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--sidebar-active); letter-spacing: -0.2px; }
+    .sb-nav { flex: 1; padding: 10px 10px; overflow-y: auto; }
+    .sb-section { padding: 14px 8px 5px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--sidebar-muted); }
+    .sb-link {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 8px; border-radius: 6px; margin-bottom: 1px;
+      color: var(--sidebar-text); text-decoration: none;
+      font-size: 13.5px; font-weight: 400;
+      transition: background 0.12s, color 0.12s; position: relative;
+    }
+    .sb-link svg { width: 14px; height: 14px; flex-shrink: 0; opacity: 0.65; }
+    .sb-link:hover { background: rgba(255,255,255,0.06); color: var(--sidebar-active); }
+    .sb-link:hover svg { opacity: 1; }
+    .sb-link.active { background: rgba(255,255,255,0.08); color: var(--sidebar-active); font-weight: 500; }
+    .sb-link.active svg { opacity: 1; }
+    .sb-link.active::before { content:''; position:absolute; left:0; top:7px; bottom:7px; width: 2.5px; border-radius: 2px; background: var(--accent); }
+    .sb-prefs { padding: 0 10px 10px; }
+    .sb-theme-btn {
+      display: flex; align-items: center; gap: 8px;
+      width: 100%; padding: 7px 8px; border-radius: 6px;
+      background: transparent; border: none; cursor: pointer;
+      color: var(--sidebar-text); font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.12s, color 0.12s; margin-bottom: 8px;
+    }
+    .sb-theme-btn svg { width: 13px; height: 13px; opacity: 0.65; }
+    .sb-theme-btn:hover { background: rgba(255,255,255,0.06); color: var(--sidebar-active); }
+    .sb-langs { display: flex; gap: 5px; padding: 0 8px 4px; }
+    .lang-pill { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; border: 1px solid var(--border-dark); color: var(--sidebar-muted); background: transparent; cursor: pointer; transition: all 0.12s; }
+    .lang-pill:hover, .lang-pill.on { color: var(--sidebar-active); border-color: var(--accent); background: rgba(42,157,130,0.15); }
+    .sb-user { padding: 10px; border-top: 1px solid var(--border-dark); flex-shrink: 0; }
+    .sb-user-inner { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 6px; transition: background 0.12s; }
+    .sb-user-inner:hover { background: rgba(255,255,255,0.05); }
+    .sb-avatar { width: 27px; height: 27px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 11px; font-weight: 600; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .sb-uname { font-size: 12.5px; font-weight: 500; color: var(--sidebar-active); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .sb-uemail { font-size: 11px; color: var(--sidebar-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .sb-logout { color: var(--sidebar-muted); flex-shrink:0; text-decoration:none; transition: color 0.12s; }
+    .sb-logout:hover { color: #e05252; }
+    .sb-logout svg { width: 13px; height: 13px; }
 
-    /* Animated gradient background */
-    .bg-gradient-animated {
-      background: linear-gradient(-45deg, #0c4a6e, #075985, #1e1b4b, #0f172a);
-      background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
-    }
+    /* ── MAIN ── */
+    .main-wrap { margin-left: 216px; min-height: 100vh; position: relative; z-index: 1; }
+    .topbar { height: 50px; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; position: sticky; top: 0; z-index: 30; transition: background 0.2s; }
+    .topbar-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text-1); letter-spacing: -0.3px; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .page-body { padding: 24px 28px; }
 
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+    /* ── BUTTONS ── */
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; text-decoration: none; font-family: 'DM Sans', sans-serif; transition: background 0.12s, box-shadow 0.12s, transform 0.08s; white-space: nowrap; line-height: 1; }
+    .btn:active { transform: scale(0.98); }
+    .btn svg { width: 13px; height: 13px; }
+    .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08); }
+    .btn-primary:hover { background: var(--accent-dark); }
+    .btn-ghost { background: var(--bg-card); color: var(--text-2); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: var(--bg-hover); color: var(--text-1); }
+    .btn-danger-ghost { background: transparent; color: var(--danger); border: 1px solid var(--border); font-size: 13px; }
+    .btn-danger-ghost:hover { background: #fef2f2; border-color: #fecaca; }
+    [data-theme="dark"] .btn-danger-ghost:hover { background: rgba(220,38,38,0.1); border-color: rgba(220,38,38,0.3); }
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+    .btn-icon { padding: 6px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-3); border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.12s; text-decoration: none; }
+    .btn-icon:hover { background: var(--bg-hover); color: var(--text-1); border-color: var(--text-3); }
+    .btn-icon svg { width: 13px; height: 13px; }
 
-    /* Status badges */
-    .badge-paid    { background: #dcfce7; color: #166534; }
-    .badge-pending { background: #fef9c3; color: #854d0e; }
-    .badge-overdue { background: #fee2e2; color: #991b1b; }
-    .dark .badge-paid    { background: #14532d; color: #86efac; }
-    .dark .badge-pending { background: #713f12; color: #fde047; }
-    .dark .badge-overdue { background: #7f1d1d; color: #fca5a5; }
+    /* ── CARDS ── */
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; transition: background 0.2s, border-color 0.2s; }
+    .card-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .card-head-title { font-size: 13px; font-weight: 600; color: var(--text-1); letter-spacing: -0.1px; }
+    .card-body { padding: 18px; }
+    .card-link { font-size: 12px; color: var(--accent); text-decoration: none; font-weight: 500; }
+    .card-link:hover { text-decoration: underline; }
 
-    /* Card hover */
-    .card-hover {
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .card-hover:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 20px 40px rgba(14, 165, 233, 0.15);
-    }
+    /* ── STAT CARDS ── */
+    .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; transition: background 0.2s; }
+    .stat-icon { width: 30px; height: 30px; border-radius: 7px; background: var(--accent-light); display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+    .stat-icon svg { width: 14px; height: 14px; color: var(--accent); }
+    .stat-label { font-size: 11px; font-weight: 500; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
+    .stat-value { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--text-1); letter-spacing: -0.5px; line-height: 1; }
+    .stat-meta { font-size: 11.5px; color: var(--text-3); margin-top: 5px; }
 
-    /* Sidebar active */
-    .nav-active {
-      background: linear-gradient(135deg, rgba(14,165,233,0.2), rgba(139,92,246,0.1));
-      border-left: 3px solid #0ea5e9;
-    }
+    /* ── DATA ROWS ── */
+    .data-row { display: flex; align-items: center; gap: 12px; padding: 10px 18px; border-bottom: 1px solid var(--border); transition: background 0.1s; text-decoration: none; color: inherit; }
+    .data-row:last-child { border-bottom: none; }
+    .data-row:hover { background: var(--bg-hover); }
 
-    /* Alert animations */
-    .alert-enter {
-      animation: slideDown 0.3s ease;
-    }
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-10px); }
-      to   { opacity: 1; transform: translateY(0); }
+    /* ── BADGES ── */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+    .badge::before { content:''; width:5px; height:5px; border-radius:50%; }
+    .badge-paid    { background:#ecfdf5; color:#065f46; }
+    .badge-paid::before { background:#059669; }
+    .badge-pending { background:#fffbeb; color:#92400e; }
+    .badge-pending::before { background:#d97706; }
+    .badge-overdue { background:#fef2f2; color:#991b1b; }
+    .badge-overdue::before { background:#dc2626; }
+    [data-theme="dark"] .badge-paid    { background:#052e16; color:#6ee7b7; }
+    [data-theme="dark"] .badge-paid::before { background:#34d399; }
+    [data-theme="dark"] .badge-pending { background:#1c1400; color:#fcd34d; }
+    [data-theme="dark"] .badge-pending::before { background:#f59e0b; }
+    [data-theme="dark"] .badge-overdue { background:#1f0909; color:#fca5a5; }
+    [data-theme="dark"] .badge-overdue::before { background:#f87171; }
+
+    /* ── FORMS ── */
+    .field { margin-bottom: 16px; }
+    .field-label { display: block; font-size: 12px; font-weight: 500; color: var(--text-2); margin-bottom: 5px; }
+    .field-input { width: 100%; padding: 8px 11px; background: var(--bg); border: 1px solid var(--border); border-radius: 7px; font-size: 13.5px; color: var(--text-1); font-family: 'DM Sans', sans-serif; transition: border-color 0.15s, box-shadow 0.15s; outline: none; }
+    .field-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,107,90,0.1); }
+    .field-input::placeholder { color: var(--text-3); }
+    textarea.field-input { resize: vertical; min-height: 84px; line-height: 1.5; }
+    select.field-input { cursor: pointer; }
+    .field-input-icon { position: relative; }
+    .field-input-icon > svg:first-child { position:absolute; left:10px; top:50%; transform:translateY(-50%); width:13px; height:13px; color:var(--text-3); pointer-events:none; }
+    .field-input-icon .field-input { padding-left: 32px; }
+
+    /* ── FLASH ── */
+    .flash-wrap { position: fixed; top: 14px; right: 14px; z-index: 9999; display: flex; flex-direction: column; gap: 7px; max-width: 320px; width: 100%; }
+    .flash { display: flex; align-items: flex-start; gap: 9px; padding: 11px 13px; border-radius: 8px; border: 1px solid; font-size: 13px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); animation: fi 0.2s ease; }
+    @keyframes fi { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
+    .flash svg { width:13px; height:13px; flex-shrink:0; margin-top:1px; }
+    .flash-x { margin-left:auto; cursor:pointer; opacity:0.45; flex-shrink:0; background:none; border:none; padding:0; display:flex; }
+    .flash-x:hover { opacity:1; }
+    .flash-x svg { width:12px; height:12px; }
+    .f-success { background:#f0fdf4; border-color:#bbf7d0; color:#14532d; }
+    .f-error   { background:#fef2f2; border-color:#fecaca; color:#7f1d1d; }
+    .f-info    { background:#f0f9ff; border-color:#bae6fd; color:#0c4a6e; }
+    [data-theme="dark"] .f-success { background:#052e16; border-color:#166534; color:#86efac; }
+    [data-theme="dark"] .f-error   { background:#1f0909; border-color:#7f1d1d; color:#fca5a5; }
+    [data-theme="dark"] .f-info    { background:#0c1825; border-color:#0369a1; color:#7dd3fc; }
+
+    /* ── AVATARS ── */
+    .av { border-radius:50%; background:var(--accent); color:#fff; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .av-s { width:28px; height:28px; font-size:11px; }
+    .av-m { width:34px; height:34px; font-size:13px; }
+    .av-l { width:48px; height:48px; font-size:18px; border-radius:10px; }
+
+    /* ── EMPTY STATE ── */
+    .empty { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 20px; text-align:center; }
+    .empty-ico { width:44px; height:44px; border-radius:9px; background:var(--bg-hover); display:flex; align-items:center; justify-content:center; margin-bottom:14px; }
+    .empty-ico svg { width:20px; height:20px; color:var(--text-3); }
+    .empty h3 { font-size:14px; font-weight:500; color:var(--text-1); margin-bottom:5px; }
+    .empty p  { font-size:13px; color:var(--text-3); max-width:240px; line-height:1.6; margin-bottom:18px; }
+
+    /* ── ALERT BAR ── */
+    .alert-bar { display:flex; align-items:center; gap:9px; padding:11px 15px; border-radius:8px; border:1px solid; font-size:13px; margin-bottom:18px; }
+    .alert-bar svg { width:14px; height:14px; flex-shrink:0; }
+    .ab-warn { background:#fef2f2; border-color:#fecaca; color:#991b1b; }
+    [data-theme="dark"] .ab-warn { background:rgba(220,38,38,0.07); border-color:rgba(220,38,38,0.18); color:#fca5a5; }
+
+    /* ── GRID ── */
+    .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+    .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+    @media(max-width:900px) { .grid-4 { grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:600px) { .grid-2,.grid-4 { grid-template-columns:1fr; } }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width:4px; height:4px; }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:768px) {
+      .sidebar { transform:translateX(-100%); transition:transform 0.22s; }
+      .sidebar.open { transform:none; }
+      .main-wrap { margin-left:0; }
+      .topbar { padding:0 16px; }
+      .page-body { padding:16px; }
     }
   </style>
 </head>
+<body>
 
-<body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen">
-
-<!-- Flash Messages -->
 {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-  <div class="fixed top-4 right-4 z-50 space-y-2 max-w-sm w-full">
-    {% for category, message in messages %}
-    <div class="alert-enter flex items-start gap-3 px-4 py-3 rounded-xl shadow-lg border
-      {% if category == 'success' %} bg-green-50 dark:bg-green-900/40 border-green-200 dark:border-green-700 text-green-800 dark:text-green-200
-      {% elif category == 'error' %} bg-red-50 dark:bg-red-900/40 border-red-200 dark:border-red-700 text-red-800 dark:text-red-200
-      {% else %} bg-blue-50 dark:bg-blue-900/40 border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200
-      {% endif %}">
-      <i data-lucide="
-        {% if category == 'success' %}check-circle
-        {% elif category == 'error' %}x-circle
-        {% else %}info{% endif %}"
-        class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
-      <p class="text-sm font-medium flex-1">{{ message }}</p>
-      <button onclick="this.parentElement.remove()" class="opacity-60 hover:opacity-100">
-        <i data-lucide="x" class="w-3 h-3"></i>
-      </button>
-    </div>
-    {% endfor %}
+{% if messages %}
+<div class="flash-wrap">
+  {% for cat, msg in messages %}
+  <div class="flash f-{{ 'success' if cat=='success' else 'error' if cat=='error' else 'info' }}">
+    <i data-lucide="{{ 'check-circle' if cat=='success' else 'x-circle' if cat=='error' else 'info' }}"></i>
+    <span style="flex:1">{{ msg }}</span>
+    <button class="flash-x" onclick="this.closest('.flash').remove()"><i data-lucide="x"></i></button>
   </div>
-  {% endif %}
+  {% endfor %}
+</div>
+{% endif %}
 {% endwith %}
 
 {% block fullpage %}
-
 {% if current_user.is_authenticated %}
-<!-- App Layout -->
-<div class="flex h-screen overflow-hidden">
+<div style="display:flex;">
 
-  <!-- Sidebar -->
-  <aside id="sidebar" class="w-64 flex-shrink-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col overflow-y-auto glass">
+  <aside class="sidebar" id="sidebar">
+    <a href="{{ url_for('dashboard.index') }}" class="sb-logo">
+      <div class="sb-mark"><i data-lucide="briefcase"></i></div>
+      <span class="sb-name">ClientKeep</span>
+    </a>
 
-    <!-- Logo -->
-    <div class="px-6 py-6 border-b border-gray-100 dark:border-gray-800">
-      <a href="{{ url_for('dashboard.index') }}" class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center">
-          <i data-lucide="briefcase" class="w-4 h-4 text-white"></i>
-        </div>
-        <span class="font-display font-bold text-xl gradient-text">ClientKeep</span>
+    <nav class="sb-nav">
+      <a href="{{ url_for('dashboard.index') }}" class="sb-link {% if request.endpoint=='dashboard.index' %}active{% endif %}">
+        <i data-lucide="layout-dashboard"></i><span data-i18n="nav_dashboard">Dashboard</span>
       </a>
-    </div>
-
-    <!-- Nav Links -->
-    <nav class="flex-1 px-3 py-4 space-y-1">
-      <a href="{{ url_for('dashboard.index') }}"
-        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white
-        {% if request.endpoint == 'dashboard.index' %}nav-active text-brand-600 dark:text-brand-400{% endif %}">
-        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-        <span data-i18n="nav_dashboard">Dashboard</span>
+      <a href="{{ url_for('clients.index') }}" class="sb-link {% if 'clients' in request.endpoint %}active{% endif %}">
+        <i data-lucide="users"></i><span data-i18n="nav_clients">Clients</span>
+      </a>
+      <a href="{{ url_for('invoices.index') }}" class="sb-link {% if 'invoices' in request.endpoint %}active{% endif %}">
+        <i data-lucide="file-text"></i><span data-i18n="nav_invoices">Invoices</span>
+      </a>
+      <a href="{{ url_for('reminders.index') }}" class="sb-link {% if 'reminders' in request.endpoint %}active{% endif %}">
+        <i data-lucide="bell"></i><span data-i18n="nav_reminders">Reminders</span>
       </a>
 
-      <a href="{{ url_for('clients.index') }}"
-        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white
-        {% if 'clients' in request.endpoint %}nav-active text-brand-600 dark:text-brand-400{% endif %}">
-        <i data-lucide="users" class="w-4 h-4"></i>
-        <span data-i18n="nav_clients">Clients</span>
+      <div class="sb-section" data-i18n="nav_account">Account</div>
+      <a href="{{ url_for('settings.index') }}" class="sb-link {% if 'settings' in request.endpoint %}active{% endif %}">
+        <i data-lucide="settings"></i><span data-i18n="nav_settings">Settings</span>
       </a>
 
-      <a href="{{ url_for('invoices.index') }}"
-        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white
-        {% if 'invoices' in request.endpoint %}nav-active text-brand-600 dark:text-brand-400{% endif %}">
-        <i data-lucide="file-text" class="w-4 h-4"></i>
-        <span data-i18n="nav_invoices">Invoices</span>
-      </a>
-
-      <div class="pt-4 pb-1 px-3">
-        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-600" data-i18n="nav_settings">Settings</p>
-      </div>
-
-      <!-- Language Switcher -->
-      <div class="px-3 py-2">
-        <p class="text-xs text-gray-500 dark:text-gray-500 mb-2" data-i18n="label_language">Language</p>
-        <div class="flex gap-2">
-          <button onclick="setLang('en')" id="lang-en" class="px-2 py-1 rounded text-xs font-medium border border-gray-200 dark:border-gray-700 hover:border-brand-400 transition-colors">EN</button>
-          <button onclick="setLang('fr')" id="lang-fr" class="px-2 py-1 rounded text-xs font-medium border border-gray-200 dark:border-gray-700 hover:border-brand-400 transition-colors">FR</button>
-          <button onclick="setLang('ar')" id="lang-ar" class="px-2 py-1 rounded text-xs font-medium border border-gray-200 dark:border-gray-700 hover:border-brand-400 transition-colors">AR</button>
-        </div>
+      <div class="sb-section" data-i18n="nav_prefs">Preferences</div>
+      <button class="sb-theme-btn" onclick="toggleTheme()">
+        <i data-lucide="sun"  id="ico-sun"></i>
+        <i data-lucide="moon" id="ico-moon" style="display:none"></i>
+        <span id="theme-lbl" data-i18n="theme_dark">Dark mode</span>
+      </button>
+      <div class="sb-langs">
+        <button class="lang-pill" id="lang-en" onclick="setLang('en')">EN</button>
+        <button class="lang-pill" id="lang-fr" onclick="setLang('fr')">FR</button>
+        <button class="lang-pill" id="lang-ar" onclick="setLang('ar')">AR</button>
       </div>
     </nav>
 
-    <!-- Bottom User section -->
-    <div class="px-4 py-4 border-t border-gray-100 dark:border-gray-800">
-      <!-- Theme Toggle -->
-      <button onclick="toggleTheme()" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 mb-3 transition-colors">
-        <i data-lucide="sun" class="w-4 h-4 dark:hidden"></i>
-        <i data-lucide="moon" class="w-4 h-4 hidden dark:block"></i>
-        <span class="dark:hidden" data-i18n="theme_dark">Dark Mode</span>
-        <span class="hidden dark:block" data-i18n="theme_light">Light Mode</span>
-      </button>
-
-      <!-- User -->
-      <div class="flex items-center gap-3 px-2">
-        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-accent-500 flex items-center justify-center text-white text-xs font-bold">
-          {{ current_user.name[0].upper() }}
+    <div class="sb-user">
+      <div class="sb-user-inner">
+        <div class="sb-avatar">{{ current_user.name[0].upper() }}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="sb-uname">{{ current_user.name }}</div>
+          <div class="sb-uemail">{{ current_user.email }}</div>
         </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-semibold truncate">{{ current_user.name }}</p>
-          <p class="text-xs text-gray-500 truncate">{{ current_user.email }}</p>
-        </div>
-        <a href="{{ url_for('auth.logout') }}" class="text-gray-400 hover:text-red-500 transition-colors" title="Logout">
-          <i data-lucide="log-out" class="w-4 h-4"></i>
+        <a href="{{ url_for('auth.logout') }}" class="sb-logout" title="Sign out">
+          <i data-lucide="log-out"></i>
         </a>
       </div>
     </div>
   </aside>
 
-  <!-- Main Content -->
-  <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950">
-
-    <!-- Top Bar -->
-    <header class="sticky top-0 z-30 bg-white/80 dark:bg-gray-900/80 glass border-b border-gray-200 dark:border-gray-800 px-6 py-3 flex items-center justify-between">
-      <div>
-        <h1 class="font-display font-bold text-lg text-gray-900 dark:text-white">
-          {% block page_title %}Dashboard{% endblock %}
-        </h1>
-      </div>
-      <div class="flex items-center gap-3">
-        {% block header_actions %}{% endblock %}
-      </div>
+  <div class="main-wrap">
+    <header class="topbar">
+      <span class="topbar-title">{% block page_title %}Dashboard{% endblock %}</span>
+      <div class="topbar-right">{% block header_actions %}{% endblock %}</div>
     </header>
+    <main class="page-body">{% block content %}{% endblock %}</main>
+  </div>
 
-    <!-- Page Content -->
-    <div class="p-6">
-      {% block content %}{% endblock %}
-    </div>
-  </main>
 </div>
-
 {% else %}
   {% block auth_content %}{% endblock %}
 {% endif %}
-
 {% endblock %}
 
-<!-- Lucide Icons Init -->
 <script>
   lucide.createIcons();
-</script>
-
-<!-- Theme Script -->
-<script>
-  const html = document.documentElement;
-
-  function toggleTheme() {
-    const isDark = html.classList.contains('dark');
-    html.classList.toggle('dark', !isDark);
-    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  const T = {
+    en:{ nav_dashboard:'Dashboard', nav_clients:'Clients', nav_invoices:'Invoices', nav_reminders:'Reminders', nav_account:'Account', nav_settings:'Settings', nav_prefs:'Preferences', theme_dark:'Dark mode', theme_light:'Light mode' },
+    fr:{ nav_dashboard:'Tableau de bord', nav_clients:'Clients', nav_invoices:'Factures', nav_reminders:'Rappels', nav_account:'Compte', nav_settings:'Paramètres', nav_prefs:'Préférences', theme_dark:'Mode sombre', theme_light:'Mode clair' },
+    ar:{ nav_dashboard:'لوحة التحكم', nav_clients:'العملاء', nav_invoices:'الفواتير', nav_reminders:'التذكيرات', nav_account:'الحساب', nav_settings:'الإعدادات', nav_prefs:'التفضيلات', theme_dark:'الوضع الداكن', theme_light:'الوضع الفاتح' },
+  };
+  let CL = localStorage.getItem('ck_lang') || 'en';
+  function setLang(l) {
+    CL = l; localStorage.setItem('ck_lang', l);
+    document.querySelectorAll('[data-i18n]').forEach(el => { if(T[l]?.[el.dataset.i18n]) el.textContent = T[l][el.dataset.i18n]; });
+    document.documentElement.dir = l==='ar' ? 'rtl' : 'ltr';
+    document.querySelectorAll('.lang-pill').forEach(b => b.classList.toggle('on', b.id==='lang-'+l));
+  }
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('ck_theme', t);
+    const d = t==='dark';
+    const s=document.getElementById('ico-sun'), m=document.getElementById('ico-moon'), lb=document.getElementById('theme-lbl');
+    if(s) s.style.display = d ? 'none' : '';
+    if(m) m.style.display = d ? '' : 'none';
+    if(lb) lb.textContent = d ? (T[CL]?.theme_light||'Light mode') : (T[CL]?.theme_dark||'Dark mode');
     lucide.createIcons();
   }
-
-  // Load saved theme
-  (function() {
-    const saved = localStorage.getItem('theme') || 'light';
-    if (saved === 'dark') html.classList.add('dark');
-  })();
+  function toggleTheme() { applyTheme(document.documentElement.getAttribute('data-theme')==='dark' ? 'light' : 'dark'); }
+  applyTheme(localStorage.getItem('ck_theme') || 'light');
+  setLang(CL);
+  setTimeout(() => { document.querySelectorAll('.flash').forEach(el => { el.style.transition='opacity 0.4s'; el.style.opacity='0'; setTimeout(()=>el.remove(),400); }); }, 4500);
 </script>
-
-<!-- i18n Script -->
-<script>
-  const translations = {
-    en: {
-      nav_dashboard: 'Dashboard', nav_clients: 'Clients', nav_invoices: 'Invoices',
-      nav_settings: 'Settings', label_language: 'Language',
-      theme_dark: 'Dark Mode', theme_light: 'Light Mode',
-    },
-    fr: {
-      nav_dashboard: 'Tableau de bord', nav_clients: 'Clients', nav_invoices: 'Factures',
-      nav_settings: 'Paramètres', label_language: 'Langue',
-      theme_dark: 'Mode Sombre', theme_light: 'Mode Clair',
-    },
-    ar: {
-      nav_dashboard: 'لوحة التحكم', nav_clients: 'العملاء', nav_invoices: 'الفواتير',
-      nav_settings: 'الإعدادات', label_language: 'اللغة',
-      theme_dark: 'الوضع الداكن', theme_light: 'الوضع الفاتح',
-    },
-  };
-
-  function setLang(lang) {
-    localStorage.setItem('lang', lang);
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.getAttribute('data-i18n');
-      if (translations[lang] && translations[lang][key]) {
-        el.textContent = translations[lang][key];
-      }
-    });
-    // RTL for Arabic
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    // Highlight active lang button
-    ['en','fr','ar'].forEach(l => {
-      const btn = document.getElementById('lang-' + l);
-      if (btn) btn.classList.toggle('border-brand-500', l === lang);
-    });
-  }
-
-  // Load saved lang
-  (function() {
-    const lang = localStorage.getItem('lang') || 'en';
-    setLang(lang);
-  })();
-</script>
-
 {% block extra_scripts %}{% endblock %}
-
 </body>
 </html>

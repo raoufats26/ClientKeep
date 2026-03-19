@@ -1,156 +1,202 @@
 {% extends "base.html" %}
-
 {% block title %}Dashboard — ClientKeep{% endblock %}
 {% block page_title %}Dashboard{% endblock %}
 
 {% block header_actions %}
-<a href="{{ url_for('clients.add') }}"
-  class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white text-sm font-semibold rounded-xl transition-all shadow-md shadow-brand-500/20 hover:scale-[1.02]">
-  <i data-lucide="plus" class="w-4 h-4"></i>
-  New Client
+<a href="{{ url_for('invoices.add') }}" class="btn btn-primary">
+  <i data-lucide="plus"></i> New Invoice
 </a>
 {% endblock %}
 
 {% block content %}
 
-<!-- Welcome Banner -->
-<div class="mb-6 p-6 rounded-2xl bg-gradient-to-r from-brand-600 to-accent-600 text-white relative overflow-hidden">
-  <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10 blur-2xl"></div>
-  <div class="absolute -bottom-10 right-20 w-32 h-32 rounded-full bg-white/10 blur-2xl"></div>
-  <p class="text-brand-100 text-sm font-medium mb-1">👋 Welcome back</p>
-  <h2 class="font-display font-bold text-2xl">{{ current_user.name }}</h2>
-  <p class="text-brand-200 text-sm mt-1">Here's your business overview for today.</p>
+<!-- Greeting -->
+<div style="margin-bottom:22px;">
+  <p style="font-size:13px;color:var(--text-3);margin-bottom:2px;">
+    Good {% if now.hour < 12 %}morning{% elif now.hour < 18 %}afternoon{% else %}evening{% endif %},
+    <span style="color:var(--text-2);">{{ current_user.name.split()[0] }}</span>
+  </p>
+  <h2 style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--text-1);letter-spacing:-0.3px;">Here's your business overview</h2>
 </div>
 
-<!-- Stats Grid -->
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-
-  <div class="card-hover bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
-    <div class="flex items-center justify-between mb-3">
-      <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
-        <i data-lucide="users" class="w-5 h-5 text-blue-500"></i>
-      </div>
-      <span class="text-xs text-gray-400 font-medium">Total</span>
-    </div>
-    <p class="font-display font-bold text-2xl text-gray-900 dark:text-white">{{ total_clients }}</p>
-    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Clients</p>
+<!-- Stats -->
+<div class="grid-4" style="margin-bottom:22px;">
+  <div class="stat-card">
+    <div class="stat-icon"><i data-lucide="users"></i></div>
+    <div class="stat-label">Total clients</div>
+    <div class="stat-value">{{ total_clients }}</div>
+    <div class="stat-meta">active relationships</div>
   </div>
-
-  <div class="card-hover bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
-    <div class="flex items-center justify-between mb-3">
-      <div class="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center">
-        <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
-      </div>
-      <span class="text-xs text-gray-400 font-medium">All time</span>
-    </div>
-    <p class="font-display font-bold text-2xl text-gray-900 dark:text-white">${{ "%.0f"|format(total_revenue) }}</p>
-    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Total Revenue</p>
+  <div class="stat-card">
+    <div class="stat-icon"><i data-lucide="trending-up"></i></div>
+    <div class="stat-label">Total revenue</div>
+    <div class="stat-value">{{ current_user.currency }} {{ "%.0f"|format(total_revenue) }}</div>
+    <div class="stat-meta">all time, paid invoices</div>
   </div>
-
-  <div class="card-hover bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
-    <div class="flex items-center justify-between mb-3">
-      <div class="w-10 h-10 rounded-xl bg-yellow-50 dark:bg-yellow-900/30 flex items-center justify-center">
-        <i data-lucide="clock" class="w-5 h-5 text-yellow-500"></i>
-      </div>
-      <span class="text-xs text-gray-400 font-medium">Action needed</span>
-    </div>
-    <p class="font-display font-bold text-2xl text-gray-900 dark:text-white">{{ pending_invoices }}</p>
-    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Pending Invoices</p>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:#fffbeb;"><i data-lucide="clock" style="color:#d97706;"></i></div>
+    <div class="stat-label">Awaiting payment</div>
+    <div class="stat-value">{{ pending_invoices }}</div>
+    <div class="stat-meta">pending invoices</div>
   </div>
-
-  <div class="card-hover bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
-    <div class="flex items-center justify-between mb-3">
-      <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center">
-        <i data-lucide="calendar" class="w-5 h-5 text-purple-500"></i>
-      </div>
-      <span class="text-xs text-gray-400 font-medium">This month</span>
-    </div>
-    <p class="font-display font-bold text-2xl text-gray-900 dark:text-white">${{ "%.0f"|format(monthly_income) }}</p>
-    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Monthly Income</p>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:#f0f9ff;"><i data-lucide="calendar" style="color:#0284c7;"></i></div>
+    <div class="stat-label">This month</div>
+    <div class="stat-value">{{ current_user.currency }} {{ "%.0f"|format(monthly_income) }}</div>
+    <div class="stat-meta">income earned</div>
   </div>
-
 </div>
 
-<!-- Overdue Alert -->
 {% if overdue_invoices > 0 %}
-<div class="mb-6 flex items-center gap-3 px-5 py-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-  <i data-lucide="alert-triangle" class="w-5 h-5 text-red-500 flex-shrink-0"></i>
-  <div class="flex-1">
-    <p class="text-sm font-semibold text-red-700 dark:text-red-300">{{ overdue_invoices }} overdue invoice{{ 's' if overdue_invoices > 1 }}</p>
-    <p class="text-xs text-red-500 dark:text-red-400">These need your attention immediately.</p>
-  </div>
-  <a href="{{ url_for('invoices.index') }}" class="text-xs font-semibold text-red-600 hover:text-red-700 dark:text-red-400 whitespace-nowrap">View all →</a>
+<div class="alert-bar ab-warn">
+  <i data-lucide="alert-triangle"></i>
+  <span><strong>{{ overdue_invoices }} overdue invoice{{ 's' if overdue_invoices > 1 }}.</strong> These need your attention.</span>
+  <a href="{{ url_for('invoices.index') }}" style="margin-left:auto;font-size:12px;font-weight:500;color:inherit;text-decoration:underline;white-space:nowrap;">View all →</a>
 </div>
 {% endif %}
 
-<!-- Two Column Layout -->
-<div class="grid lg:grid-cols-2 gap-6">
+<!-- Chart + Activity row -->
+<div style="display:grid;grid-template-columns:1fr 280px;gap:16px;margin-bottom:16px;">
 
-  <!-- Recent Clients -->
-  <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-      <h3 class="font-display font-semibold text-gray-900 dark:text-white">Recent Clients</h3>
-      <a href="{{ url_for('clients.index') }}" class="text-xs text-brand-500 hover:text-brand-600 font-semibold">View all</a>
+  <!-- Revenue chart -->
+  <div class="card">
+    <div class="card-head">
+      <span class="card-head-title">Revenue — last 6 months</span>
     </div>
+    <div style="padding:16px 18px 14px;">
+      <canvas id="revenueChart" height="120"></canvas>
+    </div>
+  </div>
 
+  <!-- Activity log -->
+  <div class="card" style="overflow:hidden;">
+    <div class="card-head">
+      <span class="card-head-title">Recent activity</span>
+    </div>
+    {% if recent_activity %}
+    <div style="overflow-y:auto;max-height:220px;">
+      {% for act in recent_activity %}
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:9px 14px;border-bottom:1px solid var(--border);">
+        <div style="width:24px;height:24px;border-radius:6px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+          <i data-lucide="{{ act.icon }}" style="width:11px;height:11px;color:var(--accent);"></i>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;color:var(--text-1);line-height:1.4;">{{ act.action }}</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:2px;">{{ act.created_at.strftime('%b %d, %H:%M') }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty" style="padding:30px;">
+      <div class="empty-ico"><i data-lucide="activity"></i></div>
+      <p>No activity yet</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Clients + Invoices -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+  <div class="card">
+    <div class="card-head">
+      <span class="card-head-title">Recent clients</span>
+      <a href="{{ url_for('clients.index') }}" class="card-link">View all</a>
+    </div>
     {% if recent_clients %}
-    <div class="divide-y divide-gray-50 dark:divide-gray-800">
-      {% for client in recent_clients %}
-      <a href="{{ url_for('clients.view', client_id=client.id) }}" class="flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-brand-400 to-accent-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-          {{ client.name[0].upper() }}
+    <div>
+      {% for c in recent_clients %}
+      <a href="{{ url_for('clients.view', client_id=c.id) }}" class="data-row">
+        <div class="av av-s">{{ c.name[0].upper() }}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:500;color:var(--text-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ c.name }}</div>
+          <div style="font-size:11.5px;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ c.company or c.email or '—' }}</div>
         </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ client.name }}</p>
-          <p class="text-xs text-gray-500 truncate">{{ client.company or client.email or 'No details' }}</p>
-        </div>
-        <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        <span style="font-size:11.5px;color:var(--text-3);flex-shrink:0;">{{ c.invoices|length }} inv.</span>
+        <i data-lucide="chevron-right" style="width:12px;height:12px;color:var(--text-3);flex-shrink:0;"></i>
       </a>
       {% endfor %}
     </div>
     {% else %}
-    <div class="px-6 py-10 text-center">
-      <i data-lucide="users" class="w-10 h-10 text-gray-200 dark:text-gray-700 mx-auto mb-3"></i>
-      <p class="text-sm text-gray-400">No clients yet</p>
-      <a href="{{ url_for('clients.add') }}" class="mt-3 inline-block text-sm font-semibold text-brand-500 hover:text-brand-600">+ Add your first client</a>
+    <div class="empty">
+      <div class="empty-ico"><i data-lucide="users"></i></div>
+      <h3>No clients yet</h3>
+      <p>Add your first client to get started.</p>
+      <a href="{{ url_for('clients.add') }}" class="btn btn-primary btn-sm">Add client</a>
     </div>
     {% endif %}
   </div>
 
-  <!-- Recent Invoices -->
-  <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-      <h3 class="font-display font-semibold text-gray-900 dark:text-white">Recent Invoices</h3>
-      <a href="{{ url_for('invoices.index') }}" class="text-xs text-brand-500 hover:text-brand-600 font-semibold">View all</a>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-head-title">Recent invoices</span>
+      <a href="{{ url_for('invoices.index') }}" class="card-link">View all</a>
     </div>
-
     {% if recent_invoices %}
-    <div class="divide-y divide-gray-50 dark:divide-gray-800">
-      {% for invoice in recent_invoices %}
-      <a href="{{ url_for('invoices.view', invoice_id=invoice.id) }}" class="flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-        <div class="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0">
-          <i data-lucide="file-text" class="w-4 h-4 text-gray-400"></i>
+    <div>
+      {% for inv in recent_invoices %}
+      <a href="{{ url_for('invoices.view', invoice_id=inv.id) }}" class="data-row">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:500;color:var(--text-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ inv.client.name }}</div>
+          <div style="font-size:11.5px;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ inv.service }}</div>
         </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ invoice.client.name }}</p>
-          <p class="text-xs text-gray-500 truncate">{{ invoice.service }}</p>
-        </div>
-        <div class="text-right flex-shrink-0">
-          <p class="text-sm font-bold text-gray-900 dark:text-white">${{ "%.0f"|format(invoice.amount) }}</p>
-          <span class="text-xs font-medium px-2 py-0.5 rounded-full badge-{{ invoice.status }}">{{ invoice.status }}</span>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:13px;font-weight:600;color:var(--text-1);">{{ current_user.currency }} {{ "%.0f"|format(inv.amount) }}</div>
+          <span class="badge badge-{{ inv.status }}">{{ inv.status }}</span>
         </div>
       </a>
       {% endfor %}
     </div>
     {% else %}
-    <div class="px-6 py-10 text-center">
-      <i data-lucide="file-text" class="w-10 h-10 text-gray-200 dark:text-gray-700 mx-auto mb-3"></i>
-      <p class="text-sm text-gray-400">No invoices yet</p>
-      <a href="{{ url_for('invoices.add') }}" class="mt-3 inline-block text-sm font-semibold text-brand-500 hover:text-brand-600">+ Create your first invoice</a>
+    <div class="empty">
+      <div class="empty-ico"><i data-lucide="file-text"></i></div>
+      <h3>No invoices yet</h3>
+      <p>Create your first invoice.</p>
+      <a href="{{ url_for('invoices.add') }}" class="btn btn-primary btn-sm">Create invoice</a>
     </div>
     {% endif %}
   </div>
 
 </div>
 
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)';
+const labelColor = isDark ? '#5a5752' : '#9a9690';
+const barColor   = isDark ? '#2a9d82' : '#1a6b5a';
+
+new Chart(document.getElementById('revenueChart'), {
+  type: 'bar',
+  data: {
+    labels: {{ chart_labels|safe }},
+    datasets: [{
+      data: {{ chart_data|safe }},
+      backgroundColor: barColor,
+      borderRadius: 4,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { display: false }, tooltip: {
+      backgroundColor: isDark ? '#1f1f1d' : '#fff',
+      borderColor: isDark ? '#272623' : '#e4e2db',
+      borderWidth: 1,
+      titleColor: isDark ? '#e8e6e0' : '#1a1917',
+      bodyColor: isDark ? '#8a8680' : '#6b6862',
+      padding: 10,
+      callbacks: { label: ctx => ` ${ctx.parsed.y.toLocaleString()}` }
+    }},
+    scales: {
+      x: { grid: { display: false }, ticks: { color: labelColor, font: { size: 11 } }, border: { display: false } },
+      y: { grid: { color: gridColor }, ticks: { color: labelColor, font: { size: 11 }, callback: v => v >= 1000 ? (v/1000)+'k' : v }, border: { display: false } }
+    }
+  }
+});
+</script>
 {% endblock %}

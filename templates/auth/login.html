@@ -1,129 +1,190 @@
 {% extends "base.html" %}
-
-{% block title %}Login — ClientKeep{% endblock %}
+{% block title %}Sign in — ClientKeep{% endblock %}
 
 {% block auth_content %}
-<div class="min-h-screen flex bg-gray-950">
+<style>
+  .auth-wrap { display:flex; min-height:100vh; }
 
-  <!-- Left: Branding Panel -->
-  <div class="hidden lg:flex lg:w-1/2 bg-gradient-animated flex-col justify-between p-12 relative overflow-hidden">
-    <!-- Decorative circles -->
-    <div class="absolute -top-20 -left-20 w-80 h-80 rounded-full bg-brand-500/10 blur-3xl"></div>
-    <div class="absolute -bottom-20 -right-20 w-80 h-80 rounded-full bg-accent-500/10 blur-3xl"></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-white/5 blur-3xl"></div>
+  /* LEFT PANEL */
+  .auth-panel {
+    width: 420px; flex-shrink:0;
+    background: #111110;
+    display: flex; flex-direction:column;
+    padding: 40px;
+    position: relative; overflow: hidden;
+  }
+  @media(max-width:860px) { .auth-panel { display:none; } }
 
-    <!-- Logo -->
-    <div class="relative z-10 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
-        <i data-lucide="briefcase" class="w-5 h-5 text-white"></i>
-      </div>
-      <span class="font-display font-bold text-2xl text-white">ClientKeep</span>
+  /* Geometric accent lines */
+  .auth-panel::before {
+    content:''; position:absolute;
+    top:0; left:0; right:0; height:3px;
+    background: linear-gradient(90deg, #1a6b5a 0%, #2a9d82 50%, transparent 100%);
+  }
+  .panel-bg-shape {
+    position:absolute; bottom:-80px; right:-80px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .panel-bg-shape2 {
+    position:absolute; bottom: 60px; right: 60px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    border: 1px solid rgba(42,157,130,0.12);
+  }
+
+  .panel-logo { display:flex; align-items:center; gap:9px; margin-bottom:auto; }
+  .panel-mark { width:28px; height:28px; border-radius:7px; background:#1a6b5a; display:flex; align-items:center; justify-content:center; }
+  .panel-mark svg { width:14px; height:14px; color:#fff; }
+  .panel-name { font-family:'DM Serif Display',serif; font-size:17px; color:#fff; }
+
+  .panel-content { position:relative; z-index:1; padding: 60px 0 20px; }
+  .panel-eyebrow { font-size:11px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:#2a9d82; margin-bottom:14px; }
+  .panel-headline { font-family:'DM Serif Display',serif; font-size:32px; line-height:1.2; color:#fff; margin-bottom:16px; letter-spacing:-0.5px; }
+  .panel-headline em { font-style:italic; color:#6ee7b7; }
+  .panel-desc { font-size:14px; color:#6b6760; line-height:1.65; margin-bottom:32px; }
+
+  .panel-features { display:flex; flex-direction:column; gap:10px; }
+  .panel-feat { display:flex; align-items:center; gap:10px; }
+  .feat-dot { width:6px; height:6px; border-radius:50%; background:#1a6b5a; flex-shrink:0; }
+  .feat-text { font-size:13px; color:#8a8680; }
+
+  .panel-footer { font-size:11.5px; color:#3a3836; margin-top:auto; padding-top:20px; }
+
+  /* RIGHT: FORM */
+  .auth-form-side {
+    flex:1; display:flex; align-items:center; justify-content:center;
+    padding: 40px 24px;
+    background: var(--bg);
+  }
+  .auth-form-box { width:100%; max-width:360px; }
+
+  .auth-header { margin-bottom:28px; }
+  .auth-title { font-family:'DM Serif Display',serif; font-size:24px; color:var(--text-1); letter-spacing:-0.3px; margin-bottom:5px; }
+  .auth-sub { font-size:13.5px; color:var(--text-3); }
+  .auth-link { color:var(--accent); text-decoration:none; font-weight:500; }
+  .auth-link:hover { text-decoration:underline; }
+
+  /* Top accent line on form side */
+  .auth-form-side::before {
+    content:''; display:none;
+  }
+
+  .form-sep { display:flex; align-items:center; gap:10px; margin:4px 0 20px; }
+  .form-sep span { font-size:11px; color:var(--text-3); white-space:nowrap; }
+  .form-sep-line { flex:1; height:1px; background:var(--border); }
+
+  .remember-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .checkbox-label { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-2); cursor:pointer; }
+  .checkbox-label input { accent-color: var(--accent); width:13px; height:13px; }
+
+  .auth-footer { text-align:center; font-size:13px; color:var(--text-3); margin-top:22px; }
+
+  /* Mobile logo */
+  .mobile-logo { display:none; align-items:center; gap:8px; margin-bottom:28px; }
+  @media(max-width:860px) { .mobile-logo { display:flex; } }
+
+  /* inline error */
+  .field-err { background:#fef2f2; border-color:#fecaca; color:#7f1d1d; border-radius:7px; padding:9px 12px; font-size:13px; margin-bottom:16px; border:1px solid; }
+  [data-theme="dark"] .field-err { background:#1f0909; border-color:#7f1d1d; color:#fca5a5; }
+
+  /* theme toggle bottom */
+  .auth-theme-row { display:flex; justify-content:center; margin-top:28px; }
+  .auth-theme-btn { display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-3); background:none; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; padding:4px; transition:color 0.15s; }
+  .auth-theme-btn:hover { color:var(--text-1); }
+  .auth-theme-btn svg { width:13px; height:13px; }
+</style>
+
+<div class="auth-wrap">
+
+  <!-- Left decorative panel -->
+  <div class="auth-panel">
+    <div class="panel-bg-shape"></div>
+    <div class="panel-bg-shape2"></div>
+
+    <div class="panel-logo">
+      <div class="panel-mark"><i data-lucide="briefcase"></i></div>
+      <span class="panel-name">ClientKeep</span>
     </div>
 
-    <!-- Center Content -->
-    <div class="relative z-10">
-      <h2 class="font-display font-bold text-4xl text-white leading-tight mb-4">
-        Manage your clients<br/>
-        <span class="text-brand-300">like a pro.</span>
-      </h2>
-      <p class="text-blue-200 text-lg leading-relaxed mb-8">
-        Stop juggling spreadsheets and WhatsApp reminders. One clean dashboard for all your freelance business.
-      </p>
+    <div class="panel-content">
+      <p class="panel-eyebrow">Freelance CRM</p>
+      <h2 class="panel-headline">Your clients,<br/><em>finally</em> organized.</h2>
+      <p class="panel-desc">Replace scattered spreadsheets and missed follow-ups with one clean workspace built for freelancers.</p>
 
-      <!-- Feature Pills -->
-      <div class="flex flex-wrap gap-2">
-        {% for feature in ['✓ Client Management', '✓ Invoice Tracking', '✓ Payment Status', '✓ Smart Reminders'] %}
-        <span class="px-3 py-1 rounded-full bg-white/10 backdrop-blur text-sm text-white border border-white/20">{{ feature }}</span>
-        {% endfor %}
+      <div class="panel-features">
+        <div class="panel-feat"><div class="feat-dot"></div><span class="feat-text">Client & contact management</span></div>
+        <div class="panel-feat"><div class="feat-dot"></div><span class="feat-text">Invoice creation & PDF export</span></div>
+        <div class="panel-feat"><div class="feat-dot"></div><span class="feat-text">Payment status tracking</span></div>
+        <div class="panel-feat"><div class="feat-dot"></div><span class="feat-text">Revenue dashboard & insights</span></div>
       </div>
     </div>
 
-    <!-- Bottom tagline -->
-    <p class="relative z-10 text-blue-300 text-sm">Built for freelancers who mean business.</p>
+    <div class="panel-footer">Built for freelancers who mean business.</div>
   </div>
 
-  <!-- Right: Login Form -->
-  <div class="flex-1 flex items-center justify-center px-6 py-12 bg-white dark:bg-gray-900">
-    <div class="w-full max-w-md">
+  <!-- Right form side -->
+  <div class="auth-form-side">
+    <div class="auth-form-box">
 
-      <!-- Mobile Logo -->
-      <div class="flex items-center gap-2 mb-8 lg:hidden">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center">
-          <i data-lucide="briefcase" class="w-4 h-4 text-white"></i>
-        </div>
-        <span class="font-display font-bold text-xl gradient-text">ClientKeep</span>
+      <!-- Mobile logo only -->
+      <div class="mobile-logo">
+        <div class="panel-mark" style="width:24px;height:24px;border-radius:5px;"><i data-lucide="briefcase" style="width:11px;height:11px;color:#fff;"></i></div>
+        <span style="font-family:'DM Serif Display',serif;font-size:15px;color:var(--text-1);">ClientKeep</span>
       </div>
 
-      <div class="mb-8">
-        <h1 class="font-display font-bold text-3xl text-gray-900 dark:text-white mb-2">Welcome back</h1>
-        <p class="text-gray-500 dark:text-gray-400">Sign in to your account to continue</p>
+      <div class="auth-header">
+        <h1 class="auth-title">Welcome back</h1>
+        <p class="auth-sub">Sign in to your workspace</p>
       </div>
 
-      <!-- Flash messages inline -->
       {% with messages = get_flashed_messages(with_categories=true) %}
-        {% for category, message in messages %}
-        <div class="mb-4 px-4 py-3 rounded-xl text-sm font-medium
-          {% if category == 'success' %}bg-green-50 text-green-700 border border-green-200
-          {% elif category == 'error' %}bg-red-50 text-red-700 border border-red-200
-          {% else %}bg-blue-50 text-blue-700 border border-blue-200{% endif %}">
-          {{ message }}
-        </div>
+        {% for cat, msg in messages %}
+        <div class="field-err">{{ msg }}</div>
         {% endfor %}
       {% endwith %}
 
-      <form method="POST" class="space-y-5">
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email address</label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-              <i data-lucide="mail" class="w-4 h-4 text-gray-400"></i>
-            </div>
-            <input type="email" name="email" required placeholder="you@example.com"
-              class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-sm"/>
+      <form method="POST">
+        <div class="field">
+          <label class="field-label" for="email">Email address</label>
+          <div class="field-input-icon">
+            <i data-lucide="mail"></i>
+            <input class="field-input" type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email"/>
           </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Password</label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-              <i data-lucide="lock" class="w-4 h-4 text-gray-400"></i>
-            </div>
-            <input type="password" name="password" id="passwordInput" required placeholder="••••••••"
-              class="w-full pl-10 pr-10 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-sm"/>
-            <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
-              <i data-lucide="eye" id="eyeIcon" class="w-4 h-4"></i>
+        <div class="field">
+          <label class="field-label" for="pwd">Password</label>
+          <div class="field-input-icon" style="position:relative;">
+            <i data-lucide="lock"></i>
+            <input class="field-input" type="password" id="pwd" name="password" placeholder="••••••••" required autocomplete="current-password" style="padding-left:32px;padding-right:36px;"/>
+            <button type="button" onclick="togglePwd('pwd','eyeico')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-3);padding:0;display:flex;">
+              <i data-lucide="eye" id="eyeico" style="width:14px;height:14px;"></i>
             </button>
           </div>
         </div>
 
-        <div class="flex items-center justify-between">
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" name="remember" class="w-4 h-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500"/>
-            <span class="text-sm text-gray-600 dark:text-gray-400">Remember me</span>
+        <div class="remember-row">
+          <label class="checkbox-label">
+            <input type="checkbox" name="remember"/> Remember me
           </label>
         </div>
 
-        <button type="submit"
-          class="w-full py-3 px-4 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40 hover:scale-[1.01] active:scale-[0.99]">
-          Sign In
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:9px;">
+          Sign in
         </button>
-
       </form>
 
-      <p class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-        Don't have an account?
-        <a href="{{ url_for('auth.register') }}" class="text-brand-500 font-semibold hover:text-brand-600 transition-colors">Create one free</a>
-      </p>
+      <div class="auth-footer">
+        No account? <a href="{{ url_for('auth.register') }}" class="auth-link">Create one — it's free</a>
+      </div>
 
-      <!-- Theme toggle on auth page -->
-      <div class="mt-8 flex justify-center">
-        <button onclick="toggleTheme()" class="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-          <i data-lucide="sun" class="w-4 h-4 dark:hidden"></i>
-          <i data-lucide="moon" class="w-4 h-4 hidden dark:block"></i>
-          <span class="dark:hidden">Switch to Dark</span>
-          <span class="hidden dark:block">Switch to Light</span>
+      <div class="auth-theme-row">
+        <button class="auth-theme-btn" onclick="toggleTheme()">
+          <i data-lucide="sun" id="auth-sun"></i>
+          <i data-lucide="moon" id="auth-moon" style="display:none;"></i>
+          <span id="auth-theme-lbl">Switch to dark</span>
         </button>
       </div>
 
@@ -132,16 +193,16 @@
 </div>
 
 <script>
-  function togglePassword() {
-    const input = document.getElementById('passwordInput');
-    const icon = document.getElementById('eyeIcon');
-    if (input.type === 'password') {
-      input.type = 'text';
-      icon.setAttribute('data-lucide', 'eye-off');
-    } else {
-      input.type = 'password';
-      icon.setAttribute('data-lucide', 'eye');
-    }
+  lucide.createIcons();
+  // sync auth page theme icons
+  (function(){
+    const t = localStorage.getItem('ck_theme')||'light';
+    const s=document.getElementById('auth-sun'), m=document.getElementById('auth-moon'), l=document.getElementById('auth-theme-lbl');
+    if(t==='dark'){if(s)s.style.display='none';if(m)m.style.display='';if(l)l.textContent='Switch to light';}
+  })();
+  function togglePwd(id,ico) {
+    const i=document.getElementById(id); i.type=i.type==='password'?'text':'password';
+    document.getElementById(ico).setAttribute('data-lucide',i.type==='password'?'eye':'eye-off');
     lucide.createIcons();
   }
 </script>

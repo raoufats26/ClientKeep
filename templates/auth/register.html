@@ -1,173 +1,158 @@
 {% extends "base.html" %}
-
-{% block title %}Register — ClientKeep{% endblock %}
+{% block title %}Create account — ClientKeep{% endblock %}
 
 {% block auth_content %}
-<div class="min-h-screen flex bg-gray-950">
+<style>
+  .auth-wrap{display:flex;min-height:100vh;}
+  .auth-panel{width:420px;flex-shrink:0;background:#111110;display:flex;flex-direction:column;padding:40px;position:relative;overflow:hidden;}
+  @media(max-width:860px){.auth-panel{display:none;}}
+  .auth-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#1a6b5a 0%,#2a9d82 50%,transparent 100%);}
+  .panel-bg-shape{position:absolute;bottom:-80px;right:-80px;width:320px;height:320px;border-radius:50%;border:1px solid rgba(255,255,255,0.04);}
+  .panel-bg-shape2{position:absolute;bottom:60px;right:60px;width:180px;height:180px;border-radius:50%;border:1px solid rgba(42,157,130,0.12);}
+  .panel-logo{display:flex;align-items:center;gap:9px;margin-bottom:auto;}
+  .panel-mark{width:28px;height:28px;border-radius:7px;background:#1a6b5a;display:flex;align-items:center;justify-content:center;}
+  .panel-mark svg{width:14px;height:14px;color:#fff;}
+  .panel-name{font-family:'DM Serif Display',serif;font-size:17px;color:#fff;}
+  .panel-content{position:relative;z-index:1;padding:60px 0 20px;}
+  .panel-eyebrow{font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#2a9d82;margin-bottom:14px;}
+  .panel-headline{font-family:'DM Serif Display',serif;font-size:32px;line-height:1.2;color:#fff;margin-bottom:16px;letter-spacing:-0.5px;}
+  .panel-headline em{font-style:italic;color:#6ee7b7;}
+  .panel-desc{font-size:14px;color:#6b6760;line-height:1.65;margin-bottom:32px;}
+  .panel-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .pstat{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:12px 10px;text-align:center;}
+  .pstat-val{font-family:'DM Serif Display',serif;font-size:18px;color:#fff;}
+  .pstat-lbl{font-size:11px;color:#5a5754;margin-top:3px;}
+  .panel-footer{font-size:11.5px;color:#3a3836;margin-top:auto;padding-top:20px;}
 
-  <!-- Left: Branding Panel -->
-  <div class="hidden lg:flex lg:w-1/2 bg-gradient-animated flex-col justify-between p-12 relative overflow-hidden">
-    <div class="absolute -top-20 -left-20 w-80 h-80 rounded-full bg-brand-500/10 blur-3xl"></div>
-    <div class="absolute -bottom-20 -right-20 w-80 h-80 rounded-full bg-accent-500/10 blur-3xl"></div>
+  .auth-form-side{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 24px;background:var(--bg);}
+  .auth-form-box{width:100%;max-width:360px;}
+  .auth-header{margin-bottom:24px;}
+  .auth-title{font-family:'DM Serif Display',serif;font-size:24px;color:var(--text-1);letter-spacing:-0.3px;margin-bottom:5px;}
+  .auth-sub{font-size:13.5px;color:var(--text-3);}
+  .auth-link{color:var(--accent);text-decoration:none;font-weight:500;}
+  .auth-link:hover{text-decoration:underline;}
+  .auth-footer{text-align:center;font-size:13px;color:var(--text-3);margin-top:20px;}
+  .field-err{background:#fef2f2;border-color:#fecaca;color:#7f1d1d;border-radius:7px;padding:9px 12px;font-size:13px;margin-bottom:16px;border:1px solid;}
+  [data-theme="dark"] .field-err{background:#1f0909;border-color:#7f1d1d;color:#fca5a5;}
+  .mobile-logo{display:none;align-items:center;gap:8px;margin-bottom:28px;}
+  @media(max-width:860px){.mobile-logo{display:flex;}}
 
-    <div class="relative z-10 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
-        <i data-lucide="briefcase" class="w-5 h-5 text-white"></i>
-      </div>
-      <span class="font-display font-bold text-2xl text-white">ClientKeep</span>
+  /* strength bar */
+  .str-bars{display:flex;gap:3px;margin-top:6px;}
+  .str-bar{height:2px;flex:1;border-radius:2px;background:var(--border);transition:background 0.2s;}
+  .str-txt{font-size:11px;color:var(--text-3);margin-top:4px;}
+  .str-1 .str-bar:nth-child(1){background:#ef4444;}
+  .str-2 .str-bar:nth-child(-n+2){background:#f97316;}
+  .str-3 .str-bar:nth-child(-n+3){background:#eab308;}
+  .str-4 .str-bar{background:#22c55e;}
+</style>
+
+<div class="auth-wrap">
+
+  <div class="auth-panel">
+    <div class="panel-bg-shape"></div>
+    <div class="panel-bg-shape2"></div>
+    <div class="panel-logo">
+      <div class="panel-mark"><i data-lucide="briefcase"></i></div>
+      <span class="panel-name">ClientKeep</span>
     </div>
-
-    <div class="relative z-10">
-      <h2 class="font-display font-bold text-4xl text-white leading-tight mb-4">
-        Your freelance<br/>
-        <span class="text-brand-300">command center.</span>
-      </h2>
-      <p class="text-blue-200 text-lg leading-relaxed mb-8">
-        Join hundreds of freelancers who replaced messy spreadsheets with ClientKeep.
-      </p>
-
-      <!-- Stats -->
-      <div class="grid grid-cols-3 gap-4">
-        {% for stat in [('100%', 'Free forever'), ('2 min', 'Setup time'), ('∞', 'Clients & invoices')] %}
-        <div class="bg-white/10 backdrop-blur rounded-xl p-3 text-center">
-          <p class="font-display font-bold text-xl text-white">{{ stat[0] }}</p>
-          <p class="text-blue-300 text-xs mt-1">{{ stat[1] }}</p>
-        </div>
-        {% endfor %}
+    <div class="panel-content">
+      <p class="panel-eyebrow">Free forever</p>
+      <h2 class="panel-headline">Start in<br/><em>2 minutes.</em></h2>
+      <p class="panel-desc">No credit card. No email confirmation. Create your account and start managing clients immediately.</p>
+      <div class="panel-stats">
+        <div class="pstat"><div class="pstat-val">100%</div><div class="pstat-lbl">Free</div></div>
+        <div class="pstat"><div class="pstat-val">∞</div><div class="pstat-lbl">Clients</div></div>
+        <div class="pstat"><div class="pstat-val">∞</div><div class="pstat-lbl">Invoices</div></div>
       </div>
     </div>
-
-    <p class="relative z-10 text-blue-300 text-sm">No credit card. No email confirmation. Just sign up and go.</p>
+    <div class="panel-footer">No spam. No subscriptions. Just your CRM.</div>
   </div>
 
-  <!-- Right: Register Form -->
-  <div class="flex-1 flex items-center justify-center px-6 py-12 bg-white dark:bg-gray-900">
-    <div class="w-full max-w-md">
+  <div class="auth-form-side">
+    <div class="auth-form-box">
 
-      <div class="flex items-center gap-2 mb-8 lg:hidden">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center">
-          <i data-lucide="briefcase" class="w-4 h-4 text-white"></i>
-        </div>
-        <span class="font-display font-bold text-xl gradient-text">ClientKeep</span>
+      <div class="mobile-logo">
+        <div class="panel-mark" style="width:24px;height:24px;border-radius:5px;"><i data-lucide="briefcase" style="width:11px;height:11px;color:#fff;"></i></div>
+        <span style="font-family:'DM Serif Display',serif;font-size:15px;color:var(--text-1);">ClientKeep</span>
       </div>
 
-      <div class="mb-8">
-        <h1 class="font-display font-bold text-3xl text-gray-900 dark:text-white mb-2">Create your account</h1>
-        <p class="text-gray-500 dark:text-gray-400">Get started for free — no email confirmation needed</p>
+      <div class="auth-header">
+        <h1 class="auth-title">Create your account</h1>
+        <p class="auth-sub">No email confirmation needed</p>
       </div>
 
       {% with messages = get_flashed_messages(with_categories=true) %}
-        {% for category, message in messages %}
-        <div class="mb-4 px-4 py-3 rounded-xl text-sm font-medium
-          {% if category == 'error' %}bg-red-50 text-red-700 border border-red-200{% else %}bg-blue-50 text-blue-700 border border-blue-200{% endif %}">
-          {{ message }}
-        </div>
+        {% for cat, msg in messages %}
+        <div class="field-err">{{ msg }}</div>
         {% endfor %}
       {% endwith %}
 
-      <form method="POST" class="space-y-4">
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Full name</label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-              <i data-lucide="user" class="w-4 h-4 text-gray-400"></i>
-            </div>
-            <input type="text" name="name" required placeholder="John Doe"
-              class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-sm"/>
+      <form method="POST">
+        <div class="field">
+          <label class="field-label" for="name">Full name</label>
+          <div class="field-input-icon">
+            <i data-lucide="user"></i>
+            <input class="field-input" type="text" id="name" name="name" placeholder="Jane Smith" required autocomplete="name"/>
           </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email address</label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-              <i data-lucide="mail" class="w-4 h-4 text-gray-400"></i>
-            </div>
-            <input type="email" name="email" required placeholder="you@example.com"
-              class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-sm"/>
+        <div class="field">
+          <label class="field-label" for="email">Email address</label>
+          <div class="field-input-icon">
+            <i data-lucide="mail"></i>
+            <input class="field-input" type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email"/>
           </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Password</label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-              <i data-lucide="lock" class="w-4 h-4 text-gray-400"></i>
-            </div>
-            <input type="password" name="password" id="passInput" required placeholder="Min. 8 characters"
-              class="w-full pl-10 pr-10 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-sm"
-              oninput="checkStrength(this.value)"/>
-            <button type="button" onclick="togglePwd('passInput','eye1')" class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
-              <i data-lucide="eye" id="eye1" class="w-4 h-4"></i>
+        <div class="field">
+          <label class="field-label" for="pwd">Password</label>
+          <div class="field-input-icon" style="position:relative;">
+            <i data-lucide="lock"></i>
+            <input class="field-input" type="password" id="pwd" name="password" placeholder="Min. 8 characters" required autocomplete="new-password" style="padding-left:32px;padding-right:36px;" oninput="checkStr(this.value)"/>
+            <button type="button" onclick="togglePwd('pwd','ei1')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-3);padding:0;display:flex;">
+              <i data-lucide="eye" id="ei1" style="width:14px;height:14px;"></i>
             </button>
           </div>
-          <!-- Password strength bar -->
-          <div class="mt-2 flex gap-1">
-            <div id="s1" class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-700 transition-colors"></div>
-            <div id="s2" class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-700 transition-colors"></div>
-            <div id="s3" class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-700 transition-colors"></div>
-            <div id="s4" class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-700 transition-colors"></div>
+          <div class="str-bars" id="sbars">
+            <div class="str-bar"></div><div class="str-bar"></div>
+            <div class="str-bar"></div><div class="str-bar"></div>
           </div>
-          <p id="strengthText" class="text-xs text-gray-400 mt-1"></p>
+          <div class="str-txt" id="stxt"></div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Confirm password</label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-              <i data-lucide="lock" class="w-4 h-4 text-gray-400"></i>
-            </div>
-            <input type="password" name="confirm_password" id="confirmInput" required placeholder="Repeat password"
-              class="w-full pl-10 pr-10 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-sm"/>
-            <button type="button" onclick="togglePwd('confirmInput','eye2')" class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
-              <i data-lucide="eye" id="eye2" class="w-4 h-4"></i>
+        <div class="field">
+          <label class="field-label" for="cpwd">Confirm password</label>
+          <div class="field-input-icon" style="position:relative;">
+            <i data-lucide="lock"></i>
+            <input class="field-input" type="password" id="cpwd" name="confirm_password" placeholder="Repeat password" required autocomplete="new-password" style="padding-left:32px;padding-right:36px;"/>
+            <button type="button" onclick="togglePwd('cpwd','ei2')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-3);padding:0;display:flex;">
+              <i data-lucide="eye" id="ei2" style="width:14px;height:14px;"></i>
             </button>
           </div>
         </div>
 
-        <button type="submit"
-          class="w-full py-3 px-4 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40 hover:scale-[1.01] active:scale-[0.99] mt-2">
-          Create Account
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:9px;margin-top:4px;">
+          Create account
         </button>
-
       </form>
 
-      <p class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-        Already have an account?
-        <a href="{{ url_for('auth.login') }}" class="text-brand-500 font-semibold hover:text-brand-600 transition-colors">Sign in</a>
-      </p>
-
+      <div class="auth-footer">
+        Already have an account? <a href="{{ url_for('auth.login') }}" class="auth-link">Sign in</a>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-  function togglePwd(inputId, iconId) {
-    const input = document.getElementById(inputId);
-    const icon = document.getElementById(iconId);
-    input.type = input.type === 'password' ? 'text' : 'password';
-    icon.setAttribute('data-lucide', input.type === 'password' ? 'eye' : 'eye-off');
-    lucide.createIcons();
-  }
-
-  function checkStrength(val) {
-    const bars = ['s1','s2','s3','s4'];
-    const txt = document.getElementById('strengthText');
-    let score = 0;
-    if (val.length >= 8) score++;
-    if (/[A-Z]/.test(val)) score++;
-    if (/[0-9]/.test(val)) score++;
-    if (/[^A-Za-z0-9]/.test(val)) score++;
-
-    const colors = ['bg-red-400','bg-orange-400','bg-yellow-400','bg-green-400'];
-    const labels = ['','Weak','Fair','Good','Strong'];
-    bars.forEach((id, i) => {
-      const el = document.getElementById(id);
-      el.className = 'h-1 flex-1 rounded-full transition-colors ' + (i < score ? colors[score-1] : 'bg-gray-200 dark:bg-gray-700');
-    });
-    txt.textContent = val.length > 0 ? labels[score] : '';
-    txt.className = 'text-xs mt-1 ' + ['','text-red-400','text-orange-400','text-yellow-400','text-green-400'][score];
+  lucide.createIcons();
+  function togglePwd(id,ico){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';document.getElementById(ico).setAttribute('data-lucide',i.type==='password'?'eye':'eye-off');lucide.createIcons();}
+  function checkStr(v){
+    let s=0;if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;
+    const wrap=document.getElementById('sbars'), txt=document.getElementById('stxt');
+    wrap.className='str-bars'+(s>0?' str-'+s:'');
+    txt.textContent=v.length?['','Weak','Fair','Good','Strong'][s]:'';
+    txt.style.color=['','#ef4444','#f97316','#eab308','#22c55e'][s]||'';
   }
 </script>
 {% endblock %}
