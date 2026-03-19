@@ -1,62 +1,57 @@
 {% extends "base.html" %}
-{% block title %}{{ action }} invoice — ClientKeep{% endblock %}
-{% block page_title %}{{ action }} invoice{% endblock %}
+{% block title %}{{ action }} client — ClientKeep{% endblock %}
+{% block page_title %}{{ action }} client{% endblock %}
 
 {% block content %}
 <div style="max-width:560px;">
   <div class="card">
     <div class="card-head">
-      <span class="card-head-title">Invoice details</span>
+      <span class="card-head-title">Client details</span>
     </div>
     <div class="card-body">
       <form method="POST">
 
         <div class="field">
-          <label class="field-label" for="client_id">Client <span style="color:var(--danger)">*</span></label>
-          <select class="field-input" id="client_id" name="client_id" required>
-            <option value="">Select a client…</option>
-            {% for c in clients %}
-            <option value="{{ c.id }}" {% if invoice and invoice.client_id == c.id %}selected{% endif %}>
-              {{ c.name }}{% if c.company %} — {{ c.company }}{% endif %}
-            </option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="field">
-          <label class="field-label" for="service">Service / Description <span style="color:var(--danger)">*</span></label>
-          <input class="field-input" type="text" id="service" name="service" required
-            value="{{ invoice.service if invoice else '' }}"
-            placeholder="e.g. Website redesign, Monthly retainer, Logo design…"/>
+          <label class="field-label" for="name">Full name <span style="color:var(--danger)">*</span></label>
+          <input class="field-input" type="text" id="name" name="name" required
+            value="{{ client.name if client else '' }}"
+            placeholder="e.g. Jane Smith"/>
         </div>
 
         <div class="grid-2">
           <div class="field">
-            <label class="field-label" for="amount">Amount <span style="color:var(--danger)">*</span></label>
-            <div style="position:relative;">
-              <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text-3);font-weight:500;">$</span>
-              <input class="field-input" type="number" id="amount" name="amount" required step="0.01" min="0"
-                value="{{ invoice.amount if invoice else '' }}" placeholder="0.00" style="padding-left:22px;"/>
-            </div>
+            <label class="field-label" for="email">Email</label>
+            <input class="field-input" type="email" id="email" name="email"
+              value="{{ client.email if client else '' }}"
+              placeholder="jane@example.com"/>
           </div>
           <div class="field">
-            <label class="field-label" for="due_date">Due date</label>
-            <input class="field-input" type="date" id="due_date" name="due_date"
-              value="{{ invoice.due_date.strftime('%Y-%m-%d') if invoice and invoice.due_date else '' }}"/>
+            <label class="field-label" for="phone">Phone</label>
+            <input class="field-input" type="text" id="phone" name="phone"
+              value="{{ client.phone if client else '' }}"
+              placeholder="+1 555 000 0000"/>
           </div>
         </div>
 
         <div class="field">
+          <label class="field-label" for="company">Company</label>
+          <input class="field-input" type="text" id="company" name="company"
+            value="{{ client.company if client else '' }}"
+            placeholder="Acme Inc."/>
+        </div>
+
+        <div class="field">
           <label class="field-label" for="notes">Notes</label>
-          <textarea class="field-input" id="notes" name="notes" placeholder="Payment terms, additional details…">{{ invoice.notes if invoice else '' }}</textarea>
+          <textarea class="field-input" id="notes" name="notes"
+            placeholder="Any additional notes about this client…">{{ client.notes if client else '' }}</textarea>
         </div>
 
         <div style="display:flex;align-items:center;gap:8px;padding-top:4px;">
           <button type="submit" class="btn btn-primary">
             <i data-lucide="{{ 'save' if action=='Edit' else 'plus' }}"></i>
-            {{ 'Save changes' if action=='Edit' else 'Create invoice' }}
+            {{ 'Save changes' if action=='Edit' else 'Add client' }}
           </button>
-          <a href="{{ url_for('invoices.index') }}" class="btn btn-ghost">Cancel</a>
+          <a href="{{ url_for('clients.index') }}" class="btn btn-ghost">Cancel</a>
         </div>
 
       </form>
