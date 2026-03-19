@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Invoices — ClientKeep{% endblock %}
+{% block page_title %}Invoices{% endblock %}
+
+{% block header_actions %}
+<a href="{{ url_for('invoices.add') }}"
+  class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white text-sm font-semibold rounded-xl transition-all shadow-md shadow-brand-500/20 hover:scale-[1.02]">
+  <i data-lucide="plus" class="w-4 h-4"></i>
+  New Invoice
+</a>
+{% endblock %}
+
+{% block content %}
+
+<!-- Filter Tabs -->
+<div class="flex gap-2 mb-5 flex-wrap">
+  {% for tab in ['all', 'pending', 'paid', 'overdue'] %}
+  <button onclick="filterInvoices('{{ tab }}')" id="tab-{{ tab }}"
+    class="filter-tab px-4 py-2 rounded-xl text-sm font-semibold transition-all
+    {% if tab == 'all' %}bg-brand-500 text-white shadow-md shadow-brand-500/25{% else %}bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-brand-400{% endif %}">
+    {{ tab.capitalize() }}
+  </button>
+  {% endfor %}
+</div>
+
+{% if invoices %}
+<div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+  <div id="invoiceList" class="divide-y divide-gray-50 dark:divide-gray-800">
+    {% for invoice in invoices %}
+    <div class="invoice-row flex items-center gap-4 px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+         data-status="{{ invoice.status }}">
+
+      <div class="w-9 h-9 rounded-xl
+        {% if invoice.status == 'paid' %}bg-green-50 dark:bg-green-900/30
+        {% elif invoice.status == 'overdue' %}bg-red-50 dark:bg-red-900/30
+        {% else %}bg-yellow-50 dark:bg-yellow-900/30{% endif %}
+        flex items-center justify-center flex-shrink-0">
+        <i data-lucide="file-text" class="w-4 h-4
+          {% if invoice.status == 'paid' %}text-green-500
+          {% elif invoice.status == 'overdue' %}text-red-500
+          {% else %}text-yellow-500{% endif %}"></i>
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ invoice.client.name }}</p>
+        <p class="text-xs text-gray-500 truncate">{{ invoice.service }} · {{ invoice.invoice_number }}</p>
+      </div>
+
+      <div class="hidden sm:block text-sm text-gray-500 flex-shrink-0">
+        {{ invoice.created_at.strftime('%b %d, %Y') }}
+      </div>
+
+      <div class="text-right flex-shrink-0">
+        <p class="text-sm font-bold text-gray-900 dark:text-white">${{ "%.2f"|format(invoice.amount) }}</p>
+        <span class="text-xs font-medium px-2 py-0.5 rounded-full badge-{{ invoice.status }}">{{ invoice.status }}</span>
+      </div>
+
+      <div class="flex items-center gap-1 flex-shrink-0">
+        <a href="{{ url_for('invoices.view', invoice_id=invoice.id) }}"
+          class="p-2 rounded-lg text-gray-400 hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-colors">
+          <i data-lucide="eye" class="w-4 h-4"></i>
+        </a>
+        <a href="{{ url_for('invoices.edit', invoice_id=invoice.id) }}"
+          class="p-2 rounded-lg text-gray-400 hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors">
+          <i data-lucide="pencil" class="w-4 h-4"></i>
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% else %}
+<div class="flex flex-col items-center justify-center py-24 text-center">
+  <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-50 to-accent-50 dark:from-brand-900/20 dark:to-accent-900/20 flex items-center justify-center mb-6">
+    <i data-lucide="file-text" class="w-10 h-10 text-brand-400"></i>
+  </div>
+  <h3 class="font-display font-bold text-xl text-gray-900 dark:text-white mb-2">No invoices yet</h3>
+  <p class="text-gray-500 dark:text-gray-400 max-w-xs mb-6">Create your first invoice and start tracking payments professionally.</p>
+  <a href="{{ url_for('invoices.add') }}"
+    class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white font-semibold rounded-xl shadow-lg shadow-brand-500/25 hover:scale-[1.02] transition-all">
+    <i data-lucide="plus" class="w-4 h-4"></i>
+    Create Your First Invoice
+  </a>
+</div>
+{% endif %}
+
+<script>
+let activeFilter = 'all';
+
+function filterInvoices(status) {
+  activeFilter = status;
+  document.querySelectorAll('.filter-tab').forEach(btn => {
+    const isActive = btn.id === 'tab-' + status;
+    btn.className = btn.className
+      .replace('bg-brand-500 text-white shadow-md shadow-brand-500/25', '')
+      .replace('bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-brand-400', '');
+    if (isActive) {
+      btn.classList.add('bg-brand-500','text-white','shadow-md','shadow-brand-500/25');
+    } else {
+      btn.classList.add('bg-white','dark:bg-gray-900','border','border-gray-200','dark:border-gray-700','text-gray-600','dark:text-gray-400','hover:border-brand-400');
+    }
+  });
+
+  document.querySelectorAll('.invoice-row').forEach(row => {
+    row.style.display = (status === 'all' || row.dataset.status === status) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

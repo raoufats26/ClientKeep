@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Login — ClientKeep{% endblock %}
+
+{% block auth_content %}
+<div class="min-h-screen flex bg-gray-950">
+
+  <!-- Left: Branding Panel -->
+  <div class="hidden lg:flex lg:w-1/2 bg-gradient-animated flex-col justify-between p-12 relative overflow-hidden">
+    <!-- Decorative circles -->
+    <div class="absolute -top-20 -left-20 w-80 h-80 rounded-full bg-brand-500/10 blur-3xl"></div>
+    <div class="absolute -bottom-20 -right-20 w-80 h-80 rounded-full bg-accent-500/10 blur-3xl"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-white/5 blur-3xl"></div>
+
+    <!-- Logo -->
+    <div class="relative z-10 flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
+        <i data-lucide="briefcase" class="w-5 h-5 text-white"></i>
+      </div>
+      <span class="font-display font-bold text-2xl text-white">ClientKeep</span>
+    </div>
+
+    <!-- Center Content -->
+    <div class="relative z-10">
+      <h2 class="font-display font-bold text-4xl text-white leading-tight mb-4">
+        Manage your clients<br/>
+        <span class="text-brand-300">like a pro.</span>
+      </h2>
+      <p class="text-blue-200 text-lg leading-relaxed mb-8">
+        Stop juggling spreadsheets and WhatsApp reminders. One clean dashboard for all your freelance business.
+      </p>
+
+      <!-- Feature Pills -->
+      <div class="flex flex-wrap gap-2">
+        {% for feature in ['✓ Client Management', '✓ Invoice Tracking', '✓ Payment Status', '✓ Smart Reminders'] %}
+        <span class="px-3 py-1 rounded-full bg-white/10 backdrop-blur text-sm text-white border border-white/20">{{ feature }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Bottom tagline -->
+    <p class="relative z-10 text-blue-300 text-sm">Built for freelancers who mean business.</p>
+  </div>
+
+  <!-- Right: Login Form -->
+  <div class="flex-1 flex items-center justify-center px-6 py-12 bg-white dark:bg-gray-900">
+    <div class="w-full max-w-md">
+
+      <!-- Mobile Logo -->
+      <div class="flex items-center gap-2 mb-8 lg:hidden">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center">
+          <i data-lucide="briefcase" class="w-4 h-4 text-white"></i>
+        </div>
+        <span class="font-display font-bold text-xl gradient-text">ClientKeep</span>
+      </div>
+
+      <div class="mb-8">
+        <h1 class="font-display font-bold text-3xl text-gray-900 dark:text-white mb-2">Welcome back</h1>
+        <p class="text-gray-500 dark:text-gray-400">Sign in to your account to continue</p>
+      </div>
+
+      <!-- Flash messages inline -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="mb-4 px-4 py-3 rounded-xl text-sm font-medium
+          {% if category == 'success' %}bg-green-50 text-green-700 border border-green-200
+          {% elif category == 'error' %}bg-red-50 text-red-700 border border-red-200
+          {% else %}bg-blue-50 text-blue-700 border border-blue-200{% endif %}">
+          {{ message }}
+        </div>
+        {% endfor %}
+      {% endwith %}
+
+      <form method="POST" class="space-y-5">
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email address</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <i data-lucide="mail" class="w-4 h-4 text-gray-400"></i>
+            </div>
+            <input type="email" name="email" required placeholder="you@example.com"
+              class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-sm"/>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Password</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <i data-lucide="lock" class="w-4 h-4 text-gray-400"></i>
+            </div>
+            <input type="password" name="password" id="passwordInput" required placeholder="••••••••"
+              class="w-full pl-10 pr-10 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-sm"/>
+            <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
+              <i data-lucide="eye" id="eyeIcon" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" name="remember" class="w-4 h-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500"/>
+            <span class="text-sm text-gray-600 dark:text-gray-400">Remember me</span>
+          </label>
+        </div>
+
+        <button type="submit"
+          class="w-full py-3 px-4 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40 hover:scale-[1.01] active:scale-[0.99]">
+          Sign In
+        </button>
+
+      </form>
+
+      <p class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+        Don't have an account?
+        <a href="{{ url_for('auth.register') }}" class="text-brand-500 font-semibold hover:text-brand-600 transition-colors">Create one free</a>
+      </p>
+
+      <!-- Theme toggle on auth page -->
+      <div class="mt-8 flex justify-center">
+        <button onclick="toggleTheme()" class="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+          <i data-lucide="sun" class="w-4 h-4 dark:hidden"></i>
+          <i data-lucide="moon" class="w-4 h-4 hidden dark:block"></i>
+          <span class="dark:hidden">Switch to Dark</span>
+          <span class="hidden dark:block">Switch to Light</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  function togglePassword() {
+    const input = document.getElementById('passwordInput');
+    const icon = document.getElementById('eyeIcon');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.setAttribute('data-lucide', 'eye-off');
+    } else {
+      input.type = 'password';
+      icon.setAttribute('data-lucide', 'eye');
+    }
+    lucide.createIcons();
+  }
+</script>
+{% endblock %}
